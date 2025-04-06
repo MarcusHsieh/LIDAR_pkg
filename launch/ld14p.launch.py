@@ -24,8 +24,8 @@ Parameter Description:
 def generate_launch_description():
   # LDROBOT LiDAR publisher node
   ldlidar_node = Node(
-      package='lidar_pkg',
-      executable='lidar_node',
+      package='ldlidar_sl_ros2',
+      executable='ldlidar_sl_ros2_node',
       name='ldlidar_publisher_ld14',
       output='screen',
       parameters=[
