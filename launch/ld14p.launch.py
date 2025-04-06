@@ -47,7 +47,7 @@ def generate_launch_description():
     package='tf2_ros',
     executable='static_transform_publisher',
     name='base_link_to_base_laser_ld14p',
-    arguments=['-0.15', '0', '0.345', '0', '0', '1.5708','base_link','base_laser']
+    arguments=['-0.15', '0', '0.345', '0', '1.5708', '0','base_link','base_laser']
     # x y z pitch roll yaw
 
     # 15 cm back 34.5 cm up
