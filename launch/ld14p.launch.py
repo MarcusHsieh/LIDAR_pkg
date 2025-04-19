@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 '''
@@ -22,6 +24,15 @@ Parameter Description:
 '''
 
 def generate_launch_description():
+  # Declare the launch argument for the serial port
+  serial_port_arg = DeclareLaunchArgument(
+      'port_name',
+      default_value='/dev/ttyUSB0',
+      description='Serial port for the LDLIDAR'
+  )
+  # Use the launch configuration in the node
+  port_name_config = LaunchConfiguration('port_name')
+
   # LDROBOT LiDAR publisher node
   ldlidar_node = Node(
       package='ldlidar_sl_ros2',
@@ -32,8 +43,8 @@ def generate_launch_description():
         {'product_name': 'LDLiDAR_LD14P'},
         {'laser_scan_topic_name': 'scan'},
         {'point_cloud_2d_topic_name': 'pointcloud2d'},
-        {'frame_id': 'base_laser'},
-        {'port_name': '/dev/ttyUSB0'},
+        {'frame_id': 'base_laser'}, # Consider changing this to base_laser_link to match README?
+        {'port_name': port_name_config}, # Use the launch configuration
         {'serial_baudrate' : 230400},
         {'laser_scan_dir': True},
         {'enable_angle_crop_func': False},
@@ -58,9 +69,10 @@ def generate_launch_description():
 
 
   # Define LaunchDescription variable
-  ld = LaunchDescription()
-
-  ld.add_action(ldlidar_node)
-  ld.add_action(base_link_to_laser_tf_node)
+  ld = LaunchDescription([
+      serial_port_arg, # Add the declared argument
+      ldlidar_node,
+      base_link_to_laser_tf_node
+  ])
 
   return ld
