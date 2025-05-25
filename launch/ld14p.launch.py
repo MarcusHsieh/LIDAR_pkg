@@ -37,14 +37,14 @@ def generate_launch_description():
   ldlidar_node = Node(
       package='ldlidar_sl_ros2',
       executable='ldlidar_sl_ros2_node',
-      name='ldlidar_publisher_ld14',
+      name='ldlidar_publisher_ld14p',
       output='screen',
       parameters=[
         {'product_name': 'LDLiDAR_LD14P'},
         {'laser_scan_topic_name': 'scan'},
         {'point_cloud_2d_topic_name': 'pointcloud2d'},
-        {'frame_id': 'base_laser'}, # Consider changing this to base_laser_link to match README?
-        {'port_name': port_name_config}, # Use the launch configuration
+        {'frame_id': 'base_laser'},
+        {'port_name': port_name_config},
         {'serial_baudrate' : 230400},
         {'laser_scan_dir': True},
         {'enable_angle_crop_func': False},
@@ -68,10 +68,8 @@ def generate_launch_description():
 
   )
 
-
-  # Define LaunchDescription variable
   ld = LaunchDescription([
-      serial_port_arg, # Add the declared argument
+      serial_port_arg,
       ldlidar_node,
       base_link_to_laser_tf_node
   ])

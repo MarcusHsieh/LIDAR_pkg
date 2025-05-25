@@ -40,12 +40,35 @@ include_directories(
 
 file(GLOB  LDLIDAR_DRI ${CMAKE_CURRENT_SOURCE_DIR}/ldlidar_driver/src/*.cpp)
 
-add_executable(${PROJECT_NAME}_node  
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/demo.cpp 
-  ${LDLIDAR_DRI} 
+# add_executable(${PROJECT_NAME}_node  
+#   ${CMAKE_CURRENT_SOURCE_DIR}/src/demo.cpp 
+#   ${LDLIDAR_DRI} 
+# )
+# ament_target_dependencies(${PROJECT_NAME}_node rclcpp sensor_msgs geometry_msgs)
+# target_link_libraries(${PROJECT_NAME}_node pthread)
+
+# Define the ldlidar_driver library
+add_library(ldlidar_driver ${LDLIDAR_DRI}) # LDLIDAR_DRI was defined by file(GLOB ...)
+target_include_directories(ldlidar_driver PUBLIC 
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ldlidar_driver/include/>
 )
-ament_target_dependencies(${PROJECT_NAME}_node rclcpp sensor_msgs geometry_msgs)
-target_link_libraries(${PROJECT_NAME}_node pthread)
+target_link_libraries(ldlidar_driver PUBLIC Threads::Threads atomic) # Link pthread and atomic
+
+# Define the ROS2 node executable
+add_executable(${PROJECT_NAME}_node src/ldlidar_sl_ros2_node.cpp)
+ament_target_dependencies(${PROJECT_NAME}_node
+  rclcpp
+  sensor_msgs
+  geometry_msgs
+  std_msgs
+  # tf2_ros # Not directly used by this node, but launch files depend on it
+)
+target_link_libraries(${PROJECT_NAME}_node
+  ldlidar_driver # Link against our internal driver library
+)
+target_include_directories(${PROJECT_NAME}_node PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
 # Install 
 install(TARGETS ${PROJECT_NAME}_node
